@@ -11,13 +11,13 @@ object EmailService {
   def props(): Props = Props(new EmailService())
 }
 
-class EmailService extends Actor with ActorLogging{
+class EmailService extends Actor with ActorLogging {
   override def receive: Receive = {
     case MessageFromKafka(fullID, stage, status, date) =>
       val emailAndID = Main.emailContainer.get(fullID.clientID) match {
         case Some(clientEmail) => (clientEmail, fullID.userID)
         case None => throw WrongClientID(fullID)
       }
-      context.actorOf(Sender.props(), "sender") ! EmailParams(emailAndID, stage, status, date)
+      context.actorOf(Sender.props(), "sender") ! Sender.EmailParams(emailAndID, stage, status, date)
   }
 }
