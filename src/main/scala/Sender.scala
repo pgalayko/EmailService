@@ -15,7 +15,7 @@ class Sender extends Actor with ActorLogging{
 
   def sendEmail(emailParams: EmailParams) = {
 
-
+//    проверка
 
     val email = new SimpleEmail()
     email.setHostName("smtp.gmail.com")
