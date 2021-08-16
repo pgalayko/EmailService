@@ -5,7 +5,7 @@ import scala.util.{Failure, Success}
 
 object EmailService {
   case class MessageFromKafka(fullID: FullID, stage: String, status: String, date: String)
-  case class WrongClientID(id: FullID) extends IllegalStateException("Wrong client ID.")
+  case class WrongClientID(id: FullID) extends IllegalStateException(s"Wrong client ID - $id.")
 
 
   def props(): Props = Props(new EmailService())
