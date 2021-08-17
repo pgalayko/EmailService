@@ -12,6 +12,14 @@ libraryDependencies ++= Seq(
 
 libraryDependencies += "org.apache.commons" % "commons-email" % "1.5"
 
-lazy val kafkaClientsDeps: List[ModuleID] =
-  "org.apache.kafka" % "kafka-clients" % "2.6.0" ::
-    "io.confluent" % "kafka-avro-serializer" % "6.0.0" :: Nil
+libraryDependencies += "org.apache.kafka" %% "kafka" % "2.8.0"
+
+libraryDependencies += "org.slf4j" % "slf4j-api" % "1.7.32"
+
+val circeVersion = "0.14.1"
+
+libraryDependencies ++= Seq(
+  "io.circe" %% "circe-core",
+  "io.circe" %% "circe-generic",
+  "io.circe" %% "circe-parser"
+).map(_ % circeVersion)
