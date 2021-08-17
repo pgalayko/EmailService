@@ -10,14 +10,16 @@ object EmailService {
 
   def props(): Props = Props(new EmailService())
 }
-
+// TODO: Реализовать отбор по стадиям обработки
 class EmailService extends Actor with ActorLogging {
   override def receive: Receive = {
     case MessageFromKafka(fullID, stage, status, date) =>
       val emailAndID = Main.emailContainer.get(fullID.clientID) match {
-        case Some(clientEmail) => (clientEmail, fullID.userID)
+        case Some(clientEmail) => EmailAndId(clientEmail, fullID.userID)
         case None => throw WrongClientID(fullID)
       }
       context.actorOf(Sender.props(), "sender") ! Sender.EmailParams(emailAndID, stage, status, date)
   }
 }
+//val (x, y) = Tuple2(1, 2)
+case class EmailAndId(clientEmail: String, userID: Int)

@@ -2,7 +2,7 @@ import akka.actor.{Actor, ActorLogging, Props}
 import org.apache.commons.mail.{DefaultAuthenticator, SimpleEmail}
 
 object Sender {
-  case class EmailParams(emailAndID: (String, Int), stage: String, status: String, date: String)
+  case class EmailParams(emailAndID: EmailAndId, stage: String, status: String, date: String)
 
   def props(): Props = Props(new Sender())
 }
@@ -18,9 +18,13 @@ class Sender extends Actor with ActorLogging {
   }
 
   def sendEmail(emailParams: EmailParams): String = {
-    val userName = context.system.settings.config.getString("email-service.sender.username")
-    val userPassword = context.system.settings.config.getString("email-service.sender.password")
+//    val sysConfig = context.system.settings.config
+    val readStringConfig: String => String = context.system.settings.config.getString
 
+    val userName = readStringConfig("email-service.sender.username")
+    val userPassword = readStringConfig("email-service.sender.password")
+
+    // TODO: Вытащить все основные параметры для отправки в конфиг
     val email = new SimpleEmail()
     email.setHostName("smtp.gmail.com")
     email.setSmtpPort(465)
@@ -28,9 +32,9 @@ class Sender extends Actor with ActorLogging {
     email.setSSLOnConnect(true)
     email.setFrom("pgalayko@gmail.com")
     email.setSubject("User Data processing")
-    email.setMsg(s"Information on the processing of user data. User ID: ${emailParams.emailAndID._2}. Stage: ${emailParams.stage}, " +
+    email.setMsg(s"Information on the processing of user data. User ID: ${emailParams.emailAndID.userID}. Stage: ${emailParams.stage}, " +
       s"Status: ${emailParams.stage}, Date: ${emailParams.date}.")
-    email.addTo(emailParams.emailAndID._1)
+    email.addTo(emailParams.emailAndID.clientEmail)
     email.send()
   }
 }
