@@ -1,12 +1,9 @@
-import EmailService.{MessageFromKafka, WrongClientID}
-import akka.actor.{Actor, ActorLogging, Props}
-
-import scala.util.{Failure, Success}
+import EmailService.{ MessageFromKafka, WrongClientID }
+import akka.actor.{ Actor, ActorLogging, Props }
 
 object EmailService {
   case class MessageFromKafka(fullID: FullID, stage: String, status: String, date: String)
   case class WrongClientID(id: FullID) extends IllegalStateException(s"Wrong client ID - $id.")
-
 
   def props(): Props = Props(new EmailService())
 }
@@ -16,10 +13,10 @@ class EmailService extends Actor with ActorLogging {
     case MessageFromKafka(fullID, stage, status, date) =>
       val emailAndID = Main.emailContainer.get(fullID.clientID) match {
         case Some(clientEmail) => EmailAndId(clientEmail, fullID.userID)
-        case None => throw WrongClientID(fullID)
+        case None              => throw WrongClientID(fullID)
       }
       context.actorOf(Sender.props(), "sender") ! Sender.EmailParams(emailAndID, stage, status, date)
   }
 }
-//val (x, y) = Tuple2(1, 2)
+
 case class EmailAndId(clientEmail: String, userID: Int)

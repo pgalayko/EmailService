@@ -8,11 +8,8 @@ import scala.jdk.CollectionConverters.IterableHasAsScala
 object Main extends App {
   lazy val emailContainer: Map[Int, String] = Map((1111, "pgalayko@gmail.com"), (1112, "2@_.com"))
 
-  val system = ActorSystem("Email-Service")
+  val system       = ActorSystem("Email-Service")
   val emailService = system.actorOf(EmailService.props(), "email-service")
-
-//  val consumerConfig = ConsumerConfig(Server(serverKey, serverValue), KeyDeserializer(key_deserializerKey, key_deserializerValue),
-//    ValueDeserializer(value_deserializerKey, value_deserializerValue))
 
   val consumer = Consumer.apply(consumerConfig)
   consumer.subscribe(util.Collections.singletonList("test"))
