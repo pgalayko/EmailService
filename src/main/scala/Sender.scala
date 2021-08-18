@@ -9,6 +9,7 @@ object Sender {
 
 class Sender extends Actor with ActorLogging {
   import Sender._
+  import ConfigReader._
   override def receive: Receive = {
     case EmailParams(email, stage, status, date) =>
       log.info("Trying to send a message")
@@ -18,11 +19,11 @@ class Sender extends Actor with ActorLogging {
   }
 
   def sendEmail(emailParams: EmailParams): String = {
-//    val sysConfig = context.system.settings.config
-    val readStringConfig: String => String = context.system.settings.config.getString
-
-    val userName = readStringConfig("email-service.sender.username")
-    val userPassword = readStringConfig("email-service.sender.password")
+    // TODO: Занести username and userPassword in ConfigReader
+//    val readStringConfig: String => String = context.system.settings.config.getString
+//
+//    val userName = readStringConfig("email-service.sender.username")
+//    val userPassword = readStringConfig("email-service.sender.password")
 
     // TODO: Вытащить все основные параметры для отправки в конфиг
     val email = new SimpleEmail()

@@ -1,36 +1,23 @@
 import EmailService.MessageFromKafka
 import akka.actor.ActorSystem
-import org.apache.kafka.clients.consumer.KafkaConsumer
+import org.apache.kafka.clients.consumer.{ConsumerRecord, KafkaConsumer}
 
+import java.time.Duration.ofSeconds
 import java.util
-import scala.collection.JavaConverters._
+import java.util.Properties
+import scala.jdk.CollectionConverters.IterableHasAsScala
 
-object Consumer extends App {
+object Consumer {
 
-  import java.util.Properties
+  def apply(consumerConfig: ConsumerConfig): KafkaConsumer[String, MessageFromKafka] = {
+// TODO: case class ConsumerConfig()
+    val props = new Properties()
+    props.put(consumerConfig.server.key, consumerConfig.server.value)
 
-  lazy val emailContainer: Map[Int, String] = Map((1111 -> "pgalayko@gmail.com"), (1112 -> "2@_.com"))
+    props.put(consumerConfig.keyDeserializer.key, consumerConfig.keyDeserializer.value)
+    props.put(consumerConfig.valueDeserializer.key, consumerConfig.valueDeserializer.value)
+    props.put(consumerConfig.groupId.key, consumerConfig.groupId.value)
 
-  val system = ActorSystem("Email-Service")
-  val emailService = system.actorOf(EmailService.props(), "email-service")
-
-  val TOPIC = "test"
-
-  val props = new Properties()
-  props.put("bootstrap.servers", "localhost:9092")
-
-  props.put("key.deserializer", "org.apache.kafka.common.serialization.StringDeserializer")
-  props.put("value.deserializer", "CustomDeserializer")
-  props.put("group.id", "something")
-
-  val consumer = new KafkaConsumer[String, MessageFromKafka](props)
-
-  consumer.subscribe(util.Collections.singletonList(TOPIC))
-
-  while (true) {
-    val records = consumer.poll(50)
-    for (record <- records.asScala) {
-      Main.emailService ! record
-    }
+    new KafkaConsumer[String, MessageFromKafka](props)
   }
 }
