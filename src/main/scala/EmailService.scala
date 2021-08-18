@@ -7,7 +7,6 @@ object EmailService {
 
   def props(): Props = Props(new EmailService())
 }
-// TODO: Реализовать отбор по стадиям обработки
 class EmailService extends Actor with ActorLogging {
   override def receive: Receive = {
     case MessageFromKafka(fullID, stage, status, date) =>
